@@ -45,15 +45,20 @@ icps = cpspch(5.09)
 kchan chnget Schan
 kchan port kchan, 0.005
 kamp init 1
-kdt jitter .125, .03, 1.3
+kdt tablei kchan*16, 63, 0, 0, 1
+klp tablei kchan,64,0,0,1
 ares squinewave a(icps)*semitone(kdt-.1), a(0), a(-0.91), a(0), 9, -1
 ares2 squinewave a(icps)*semitone(-kdt+.1), a(0), a(-0.92), a(0),11, -1
-ares3 squinewave a(icps)*semitone(kdt), a(0), a(-0.93), a(0), 13, -1
-ares4 squinewave a(icps)*semitone(-kdt), a(0), a(-0.94), a(0), 17, -1
-ares K35_lpf ares+ares2+ares3+ares4, tablei:k(kchan*4,64,0,0,0), 8.6, 0, 0, -1
-;ares exciter ares, 150, 650, 8.0, -10
-ares *= ampdbfs(-24)
-kenv linsegr p4, .01, 1, 0.15, 0
+ares3 squinewave a(icps)*2, a(0.25), a(0.25), a(0), 13, -1
+ares4 squinewave a(icps)*2, a(0.25), a(0.20), a(0.0), 17, -1
+ares K35_lpf ares-ares2+(ares3-ares4)/4, klp, 8.6, 0, 0, -1
+ares *= ampdbfs(-30)
+kenv linsegr p4, .0625, 1, 0.10, 0
+adl init 0
+timout 0, .5, skipto
+adl = 0.45
+skipto:
+ares vdelayx ares, adl, 0.45, 32
 ares *= kenv
 outs ares, ares
 endin
@@ -62,7 +67,8 @@ endin
 <CsScore>
 f11 0 16384 11 1
 
-f64 0 4096 -8 64 2096 16384
+f63 0 4097 -8 0.01 2048 0.30 1024 .2 1024 0.01
+f64 0 4097 -5 64 2048 32768
 ;causes Csound to run for about 7000 years...
 f0 z
 i17 0 0
