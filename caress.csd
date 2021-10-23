@@ -28,7 +28,7 @@ kinp_c changed2 kinp
 kinp_c port kinp_c, 1/kr
 if (kinp_c==0) then
 if (kstatus==1) then
-event "i", 33, 0, .01, 1
+event "i", 33, 0, 0, 1
 endif
 kstatus = 0
 endif
@@ -47,18 +47,15 @@ kchan port kchan, 0.005
 kamp init 1
 kdt tablei kchan*16, 63, 0, 0, 1
 klp tablei kchan,64,0,0,1
-ares squinewave a(icps)*semitone(kdt-.1), a(0), a(-0.91), a(0), 9, -1
-ares2 squinewave a(icps)*semitone(-kdt+.1), a(0), a(-0.92), a(0),11, -1
+ares squinewave a(icps)*semitone(kdt), a(0), a(-0.91), a(0), 9, -1
+ares2 squinewave a(icps)*semitone(-kdt), a(0), a(-0.92), a(0),11, -1
 ares3 squinewave a(icps)*2, a(0.25), a(0.25), a(0), 13, -1
-ares4 squinewave a(icps)*2, a(0.25), a(0.20), a(0.0), 17, -1
-ares K35_lpf ares-ares2+(ares3-ares4)/4, klp, 8.6, 0, 0, -1
-ares *= ampdbfs(-30)
+ares4 squinewave a(icps)*3, a(0.05), a(0.60), a(0.0), 5, -1
+ares K35_hpf ares-ares2+(ares3-ares4)/4, klp, 9.750, 0,0, -1
+ares exciter ares, icps*3, icps*100, 10, -10
+ares diff ares
+ares *= ampdbfs(-3)
 kenv linsegr p4, .0625, 1, 0.10, 0
-adl init 0
-timout 0, .5, skipto
-adl = 0.45
-skipto:
-ares vdelayx ares, adl, 0.45, 32
 ares *= kenv
 outs ares, ares
 endin
@@ -67,7 +64,7 @@ endin
 <CsScore>
 f11 0 16384 11 1
 
-f63 0 4097 -8 0.01 2048 0.30 1024 .2 1024 0.01
+f63 0 4097 -8 0.01 2048 0.030 1024 .12 1024 0.01
 f64 0 4097 -5 64 2048 32768
 ;causes Csound to run for about 7000 years...
 f0 z
